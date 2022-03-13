@@ -9,6 +9,7 @@ namespace WpfEventAwaiter;
 public class TimelineCompletedAwaitable
 {
     private Action? _continuation;
+    private Timeline? _timeline;
 
     private TimelineCompletedAwaitable()
     {
@@ -29,22 +30,28 @@ public class TimelineCompletedAwaitable
         _continuation = null;
         IsCompleted = false;
         
-        EventHandler? h = null;
-        h = (_, _) =>
-        {
-            timeline.Completed -= h;
-            try
-            {
-                SetResult();
-            }
-            finally
-            {
-                Pool.Return(this);
-            }
-        };
-        timeline.Completed += h;
+        timeline.Completed += Timeline_OnCompleted;
+        _timeline = timeline;
     }
 
+    private void Timeline_OnCompleted(object? sender, EventArgs e)
+    {
+        if (_timeline != null)
+        {
+            _timeline.Completed -= Timeline_OnCompleted;
+            _timeline = null;
+        }
+        
+        try
+        {
+            SetResult();
+        }
+        finally
+        {
+            Pool.Return(this);
+        }
+    }
+    
     private void SetContinuation(Action continuation) => _continuation = continuation;
     
     private bool IsCompleted { get; set; }
@@ -53,6 +60,7 @@ public class TimelineCompletedAwaitable
     {
         IsCompleted = true;
         _continuation?.Invoke();
+        _continuation = null;
     }
     
     private static readonly ObjectPool<TimelineCompletedAwaitable> Pool =
