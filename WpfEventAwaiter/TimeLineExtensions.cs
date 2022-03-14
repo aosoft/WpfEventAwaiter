@@ -36,7 +36,14 @@ public static class TimeLineExtensions
         return vts.ToValueTask();
     }
 
-    public static TimelineCompletedAwaitable BeginTypeCAsync(this Storyboard self)
+    public static ValueTask BeginTypeCAsync(this Storyboard self)
+    {
+        var r = TimelineCompletedValueTaskSource.Create(self);
+        self.Begin();
+        return r.ToValueTask();
+    }
+    
+    public static TimelineCompletedAwaitable BeginTypeDAsync(this Storyboard self)
     {
         var r = TimelineCompletedAwaitable.Create(self);
         self.Begin();

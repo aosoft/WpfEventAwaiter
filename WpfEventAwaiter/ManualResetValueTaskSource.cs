@@ -26,7 +26,7 @@ public sealed class ManualResetValueTaskSource : IValueTaskSource
 
     public ValueTask ToValueTask() => new ValueTask(this, _core.Version);
     
-    public void GetResult(short token)
+    void IValueTaskSource.GetResult(short token)
     {
         try
         {
@@ -38,9 +38,9 @@ public sealed class ManualResetValueTaskSource : IValueTaskSource
         }
     }
 
-    public ValueTaskSourceStatus GetStatus(short token) => _core.GetStatus(token);
+    ValueTaskSourceStatus IValueTaskSource.GetStatus(short token) => _core.GetStatus(token);
 
-    public void OnCompleted(Action<object?> continuation, object? state, short token,
+    void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token,
         ValueTaskSourceOnCompletedFlags flags) =>
         _core.OnCompleted(continuation, state, token, flags);
 
@@ -76,7 +76,7 @@ public sealed class ManualResetValueTaskSource<T> : IValueTaskSource<T>
     
     public ValueTask<T> ToValueTask() => new ValueTask<T>(this, _core.Version);
     
-    public T GetResult(short token)
+    T IValueTaskSource<T>.GetResult(short token)
     {
         try
         {
@@ -88,9 +88,9 @@ public sealed class ManualResetValueTaskSource<T> : IValueTaskSource<T>
         }
     }
 
-    public ValueTaskSourceStatus GetStatus(short token) => _core.GetStatus(token);
+    ValueTaskSourceStatus IValueTaskSource<T>.GetStatus(short token) => _core.GetStatus(token);
 
-    public void OnCompleted(Action<object?> continuation, object? state, short token,
+    void IValueTaskSource<T>.OnCompleted(Action<object?> continuation, object? state, short token,
         ValueTaskSourceOnCompletedFlags flags) =>
         _core.OnCompleted(continuation, state, token, flags);
 

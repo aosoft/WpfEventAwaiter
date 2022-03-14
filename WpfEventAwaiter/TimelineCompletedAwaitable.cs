@@ -42,14 +42,7 @@ public class TimelineCompletedAwaitable
             _timeline = null;
         }
         
-        try
-        {
-            SetResult();
-        }
-        finally
-        {
-            Pool.Return(this);
-        }
+        SetResult();
     }
     
     private void SetContinuation(Action continuation) => _continuation = continuation;
@@ -86,7 +79,7 @@ public class TimelineCompletedAwaitable
 
         public void GetResult()
         {
-            
+            Pool.Return(_awaitable);
         }
         
         public void OnCompleted(Action continuation) => UnsafeOnCompleted(continuation);
