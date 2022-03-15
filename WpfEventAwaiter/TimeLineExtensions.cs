@@ -33,21 +33,22 @@ public static class TimeLineExtensions
         self.Completed += h;
 
         self.Begin();
-        return vts.ToValueTask();
+        return vts.AsValueTask();
     }
 
-    public static ValueTask BeginTypeCAsync(this Storyboard self)
+    public static ValueTask<EventArgs> BeginTypeCAsync(this Storyboard self)
     {
-        var r = TimelineCompletedValueTaskSource.Create(self);
+        var r = EventValueTaskSource<EventHandler, EventArgs>.Create(
+            h => self.Completed += h,
+            h => self.Completed -= h);
         self.Begin();
-        return r.ToValueTask();
+        return r.AsValueTask();
     }
-    
+
     public static TimelineCompletedAwaitable BeginTypeDAsync(this Storyboard self)
     {
         var r = TimelineCompletedAwaitable.Create(self);
         self.Begin();
         return r;
     }
-    
 }

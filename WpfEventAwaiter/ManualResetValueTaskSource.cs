@@ -24,7 +24,7 @@ public sealed class ManualResetValueTaskSource : IValueTaskSource
     public void SetResult() => _core.SetResult(0);
     public void SetException(Exception error) => _core.SetException(error);
 
-    public ValueTask ToValueTask() => new ValueTask(this, _core.Version);
+    public ValueTask AsValueTask() => new ValueTask(this, _core.Version);
     
     void IValueTaskSource.GetResult(short token)
     {
@@ -74,7 +74,7 @@ public sealed class ManualResetValueTaskSource<T> : IValueTaskSource<T>
     public void SetResult(T result) => _core.SetResult(result);
     public void SetException(Exception error) => _core.SetException(error);
     
-    public ValueTask<T> ToValueTask() => new ValueTask<T>(this, _core.Version);
+    public ValueTask<T> AsValueTask() => new ValueTask<T>(this, _core.Version);
     
     T IValueTaskSource<T>.GetResult(short token)
     {
