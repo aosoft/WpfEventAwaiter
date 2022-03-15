@@ -38,9 +38,9 @@ public static class TimeLineExtensions
 
     public static ValueTask<EventArgs> BeginTypeCAsync(this Storyboard self)
     {
-        var r = EventValueTaskSource<EventHandler, EventArgs>.Create(
-            h => self.Completed += h,
-            h => self.Completed -= h);
+        var r = EventValueTaskSource<Timeline, EventHandler, EventArgs>.Create(self,
+            static (t, h) => t.Completed += h,
+            static (t, h) => t.Completed -= h);
         self.Begin();
         return r.AsValueTask();
     }
