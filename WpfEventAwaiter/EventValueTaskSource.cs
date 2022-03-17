@@ -42,11 +42,17 @@ public class EventValueTaskSource<TTarget, TEventHandler, TEventArgs> : IValueTa
             _target = null;
             _removeHandler = null;
         }
+        Pool.Return(this);
     }
     
     private void OnEvent(object? sender, TEventArgs e)
     {
-        Release();
+        if (_target != null && _removeHandler != null)
+        {
+            _removeHandler(_target, _eventHandler);
+            _target = null;
+            _removeHandler = null;
+        }
        _core.SetResult(e);
     }
 
