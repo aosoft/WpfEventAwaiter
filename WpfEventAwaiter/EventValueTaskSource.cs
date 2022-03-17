@@ -34,7 +34,7 @@ public class EventValueTaskSource<TTarget, TEventHandler, TEventArgs> : IValueTa
         return r;
     }
 
-    private void OnEvent(object? sender, TEventArgs e)
+    public void Release()
     {
         if (_target != null && _removeHandler != null)
         {
@@ -42,8 +42,12 @@ public class EventValueTaskSource<TTarget, TEventHandler, TEventArgs> : IValueTa
             _target = null;
             _removeHandler = null;
         }
-
-        _core.SetResult(e);
+    }
+    
+    private void OnEvent(object? sender, TEventArgs e)
+    {
+        Release();
+       _core.SetResult(e);
     }
 
 

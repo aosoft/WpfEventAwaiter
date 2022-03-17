@@ -17,8 +17,16 @@ public static class TimeLineExtensions
         };
         self.Completed += h;
 
-        self.Begin();
-        return tcs.Task;
+        try
+        {
+            self.Begin();
+            return tcs.Task;
+        }
+        catch
+        {
+            self.Completed -= h;
+            throw;
+        }
     }
 
     public static ValueTask BeginTypeBAsync(this Storyboard self)
@@ -32,8 +40,16 @@ public static class TimeLineExtensions
         };
         self.Completed += h;
 
-        self.Begin();
-        return vts.AsValueTask();
+        try
+        {
+            self.Begin();
+            return vts.AsValueTask();
+        }
+        catch
+        {
+            self.Completed -= h;
+            throw;
+        }
     }
 
     public static ValueTask<EventArgs> BeginTypeCAsync(this Storyboard self)
@@ -41,8 +57,16 @@ public static class TimeLineExtensions
         var r = EventValueTaskSource<Timeline, EventHandler, EventArgs>.Create(self,
             static (t, h) => t.Completed += h,
             static (t, h) => t.Completed -= h);
-        self.Begin();
-        return r.AsValueTask();
+        try
+        {
+            self.Begin();
+            return r.AsValueTask();
+        }
+        catch
+        {
+            r.Release();
+            throw;
+        }
     }
 
     public static TimelineCompletedAwaitable BeginTypeDAsync(this Storyboard self)
