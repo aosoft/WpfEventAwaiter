@@ -81,9 +81,9 @@ public static class TimeLineExtensions
         }
     }
 
-    public static TimelineCompletedAwaitable BeginTypeDAsync(this Storyboard self)
+    public static TimelineCompletedValueTaskSourceAwaitable BeginTypeEAsync(this Storyboard self)
     {
-        var r = TimelineCompletedAwaitable.Create(self);
+        var r = TimelineCompletedValueTaskSourceAwaitable.Create(self);
         self.Begin();
         return r;
     }
