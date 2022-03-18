@@ -23,7 +23,9 @@ namespace WpfEventAwaiter
                 Button.Content = null;
             }
 #else
+            Button.Content = "Running";
             await new SleepAwaitable(2000);
+            Button.Content = null;
 #endif
         }
     }
