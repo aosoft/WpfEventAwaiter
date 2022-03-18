@@ -15,13 +15,16 @@ namespace WpfEventAwaiter
 
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
+#if true
             if (TryFindResource("Storyboard") is Storyboard sb)
             {
                 Button.Content = "Running";
                 await sb.BeginTypeCAsync();
                 Button.Content = null;
             }
+#else
+            await new SleepAwaitable(2000);
+#endif
         }
     }
-
 }
