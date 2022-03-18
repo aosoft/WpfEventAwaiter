@@ -75,12 +75,12 @@ public class TimelineCompletedValueTaskSourceAwaitable
         }
 
         public void OnCompleted(Action continuation) =>
-            _awaitable._core.OnCompleted(static h => ((Action)h)?.Invoke(), continuation, _token,
+            _awaitable._core.OnCompleted(h => ((Action?)h)?.Invoke(), continuation, _token,
                 ValueTaskSourceOnCompletedFlags.FlowExecutionContext |
                 ValueTaskSourceOnCompletedFlags.UseSchedulingContext);
 
         public void UnsafeOnCompleted(Action continuation) =>
-            _awaitable._core.OnCompleted(static h => ((Action)h)?.Invoke(), continuation, _token,
+            _awaitable._core.OnCompleted(h => ((Action?)h)?.Invoke(), continuation, _token,
                 ValueTaskSourceOnCompletedFlags.UseSchedulingContext);
     }
 }
