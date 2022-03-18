@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 using Microsoft.Extensions.ObjectPool;
@@ -12,6 +13,7 @@ public class EventValueTaskSource<TTarget, TEventHandler, TEventArgs> : IValueTa
 {
     private readonly TEventHandler _eventHandler;
     private ManualResetValueTaskSourceCore<TEventArgs> _core;
+    private static readonly OperationCanceledException CanceledException = new OperationCanceledException();
 
     private TTarget? _target;
     private Action<TTarget, TEventHandler>? _removeHandler;
@@ -24,17 +26,19 @@ public class EventValueTaskSource<TTarget, TEventHandler, TEventArgs> : IValueTa
     public static EventValueTaskSource<TTarget, TEventHandler, TEventArgs> Create(
         TTarget target,
         Action<TTarget, TEventHandler> addHandler,
-        Action<TTarget, TEventHandler> removeHandler)
+        Action<TTarget, TEventHandler> removeHandler,
+        CancellationToken ct = default)
     {
         var r = Pool.Get();
         r._core.Reset();
         addHandler(target, r._eventHandler);
         r._target = target;
         r._removeHandler = removeHandler;
+        ct.Register(r.OnCancel);
         return r;
     }
 
-    public void Release()
+    private void RemoveHandler()
     {
         if (_target != null && _removeHandler != null)
         {
@@ -42,18 +46,24 @@ public class EventValueTaskSource<TTarget, TEventHandler, TEventArgs> : IValueTa
             _target = null;
             _removeHandler = null;
         }
+    }
+
+    public void Release()
+    {
+        RemoveHandler();
         Pool.Return(this);
     }
     
     private void OnEvent(object? sender, TEventArgs e)
     {
-        if (_target != null && _removeHandler != null)
-        {
-            _removeHandler(_target, _eventHandler);
-            _target = null;
-            _removeHandler = null;
-        }
-       _core.SetResult(e);
+        RemoveHandler();
+        _core.SetResult(e);
+    }
+
+    private void OnCancel()
+    {
+        RemoveHandler();
+        _core.SetException(CanceledException);
     }
 
 
