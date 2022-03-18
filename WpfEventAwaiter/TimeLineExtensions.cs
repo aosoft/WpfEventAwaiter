@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 
@@ -6,7 +7,7 @@ namespace WpfEventAwaiter;
 
 public static class TimeLineExtensions
 {
-    public static Task BeginTypeAAsync(this Storyboard self)
+    public static Task BeginTypeAAsync(this Storyboard self, CancellationToken ct = default)
     {
         var tcs = new TaskCompletionSource();
         EventHandler? h = null;
@@ -16,6 +17,11 @@ public static class TimeLineExtensions
             tcs.SetResult();
         };
         self.Completed += h;
+        ct.Register(() =>
+        {
+            self.Completed -= h;
+            tcs.SetCanceled();
+        });
 
         try
         {
@@ -29,7 +35,7 @@ public static class TimeLineExtensions
         }
     }
 
-    public static ValueTask BeginTypeBAsync(this Storyboard self)
+    public static ValueTask BeginTypeBAsync(this Storyboard self, CancellationToken ct = default)
     {
         var vts = ManualResetValueTaskSource.Create();
         EventHandler? h = null;
@@ -39,6 +45,11 @@ public static class TimeLineExtensions
             vts.SetResult();
         };
         self.Completed += h;
+        ct.Register(() =>
+        {
+            self.Completed -= h;
+            vts.SetCanceled();
+        });
 
         try
         {

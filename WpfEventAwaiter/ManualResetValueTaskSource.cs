@@ -8,6 +8,7 @@ namespace WpfEventAwaiter;
 public sealed class ManualResetValueTaskSource : IValueTaskSource
 {
     private ManualResetValueTaskSourceCore<int> _core;
+    private static readonly OperationCanceledException CanceledException = new OperationCanceledException();
 
     private ManualResetValueTaskSource()
     {
@@ -22,6 +23,7 @@ public sealed class ManualResetValueTaskSource : IValueTaskSource
     }
     
     public void SetResult() => _core.SetResult(0);
+    public void SetCanceled() => _core.SetException(CanceledException);
     public void SetException(Exception error) => _core.SetException(error);
 
     public ValueTask AsValueTask() => new ValueTask(this, _core.Version);
