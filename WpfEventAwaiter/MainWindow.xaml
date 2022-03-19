@@ -15,7 +15,7 @@
     </Storyboard>
   </Window.Resources>
   <Grid>
-    <Grid Width="200" Background="Lime">
+    <Grid Width="200" Background="SlateGray">
       <Grid.LayoutTransform>
         <ScaleTransform x:Name="ScaleTransform" ScaleX="1.0" />
       </Grid.LayoutTransform>
