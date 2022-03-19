@@ -16,9 +16,9 @@
   </Window.Resources>
   <Grid>
     <Grid Width="200" Background="Lime">
-      <Grid.RenderTransform>
+      <Grid.LayoutTransform>
         <ScaleTransform x:Name="ScaleTransform" ScaleX="1.0" />
-      </Grid.RenderTransform>
+      </Grid.LayoutTransform>
       <Button x:Name="Button" Width="100" Height="50" Click="ButtonBase_OnClick"/>
     </Grid>
   </Grid>
